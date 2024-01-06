@@ -88,7 +88,8 @@ def main():
         images = images.permute(0,3,1,2)
         with torch.no_grad():
             result = model(images)
-        anomaly_result = 1.0 - np.max(result.squeeze(0).data.cpu().numpy(), axis=0)            
+        #anomaly_result = 1.0 - np.max(result.squeeze(0).data.cpu().numpy(), axis=0) 
+        anomaly_result = result[-1]    #we are using just the last channel which is the background
         pathGT = path.replace("images", "labels_masks")                
         if "RoadObsticle21" in pathGT:
            pathGT = pathGT.replace("webp", "png")
