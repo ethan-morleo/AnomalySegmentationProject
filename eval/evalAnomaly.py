@@ -60,7 +60,7 @@ def main():
 
     model = ERFNet(NUM_CLASSES)
     #model = ENet(NUM_CLASSES)
-    #model = BiSeNet(NUM_CLASSES) 
+    #model = BiSeNetV1(NUM_CLASSES) 
 
     if (not args.cpu):
         model = torch.nn.DataParallel(model).cuda()
