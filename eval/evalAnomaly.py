@@ -44,6 +44,7 @@ def main():
     parser.add_argument('--num-workers', type=int, default=4)
     parser.add_argument('--batch-size', type=int, default=1)
     parser.add_argument('--cpu', action='store_true')
+    parser.add_argument('--model', default='erfnet', help="choose witch model load between erfnet, enet, bisenet")
     args = parser.parse_args()
     anomaly_score_list = []
     ood_gts_list = []
@@ -57,10 +58,13 @@ def main():
 
     print ("Loading model: " + modelpath)
     print ("Loading weights: " + weightspath)
-
-    model = ERFNet(NUM_CLASSES)
-    #model = ENet(NUM_CLASSES)
-    #model = BiSeNetV1(NUM_CLASSES) 
+    
+    model_dict = {'erfnet': ERFNet(NUM_CLASSES), 'enet': ENet(NUM_CLASSES), 'bisenet': BiSeNetV1(NUM_CLASSES)}
+    print("model to load: ", args.model) 
+    if args.model in model_dict :
+      model = model_dict[args.model]
+    else:
+      raise Exception("Model Not found")
 
     if (not args.cpu):
         model = torch.nn.DataParallel(model).cuda()
@@ -89,7 +93,7 @@ def main():
         with torch.no_grad():
             result = model(images)
         #anomaly_result = 1.0 - np.max(result.squeeze(0).data.cpu().numpy(), axis=0) 
-        anomaly_result = result[-1]    #we are using just the last channel which is the background
+        anomaly_result = result[-1].squeeze(0).data.cpu().numpy()[19,:,:]   #we are using just the last channel which is the background
         pathGT = path.replace("images", "labels_masks")                
         if "RoadObsticle21" in pathGT:
            pathGT = pathGT.replace("webp", "png")
