@@ -143,7 +143,7 @@ class ContextPath(nn.Module):
         feat32_sum = feat32_arm + avg
         feat32_up = self.up32(feat32_sum)
         feat32_up = self.conv_head32(feat32_up)
-        if fear32_up.shape[2] == 46:
+        if feat32_up.shape[2] == 46:
             feat32_up = feat32_up[:,:,:45,:]
         feat16_arm = self.arm16(feat16)
         feat16_sum = feat16_arm + feat32_up
